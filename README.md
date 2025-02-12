@@ -18,8 +18,8 @@ My code finds the monthly averages of these years, and a user can compare these 
 
 ### Specific Stategies from SwD to Help me
 Although the graph can look busy if the user chooses to display every option, my dash loads with only 1999 and 
-2000 displayed, so the user can clearly see the improvement. The user can then compare any two (or more) years they want and 
-see that levels have been decreasing. In this way, I am making it easy for the audience to see the differences.
+2000 displayed, so the user can clearly see the improvement right away. The user can then compare any two (or more) years they want and 
+see that levels have been decreasing. 
 
 Simplified axes and titles lessen cognitive load and makes the main idea clearer to the audience.
 
