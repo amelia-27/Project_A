@@ -3,42 +3,36 @@ import plotly.express as px
 from dash import dcc, Dash
 from dash import html
 from dash.dependencies import Input, Output
-import os
-
-directory = r'C:\\Users\\ameli\\Downloads\\EPA data'
-print(f"Files in directory {directory}:")
-print(os.listdir(directory))
 
 #this class works to prevent error with consolidating the month data - basically prevents duplicates
 def load_single_year_data(file_path):
-    if os.path.exists(file_path):
         #try block helped to debug the issues with compiling month data
-        try:
-            df = pd.read_csv(file_path)
+    try:
+        df = pd.read_csv(file_path)
 
-            if "Date" in df.columns:
-                df = df.loc[:, ~df.columns.duplicated()] #prevents duplicates that causes error
-                #\/ formatting date, dropping values with hashtags instead of dates in csv
-                df["Date"] = pd.to_datetime(df["Date"], errors = 'coerce', dayfirst = True)
-                df = df.dropna(subset = ["Date"])
-                df = df.replace('#', pd.NA)
-                df = df.dropna() #drops row with NaNs
+        if "Date" in df.columns:
+            df = df.loc[:, ~df.columns.duplicated()] #prevents duplicates that causes error
+            #\/ formatting date, dropping values with hashtags instead of dates in csv
+            df["Date"] = pd.to_datetime(df["Date"], errors = 'coerce', dayfirst = True)
+            df = df.dropna(subset = ["Date"])
+            df = df.replace('#', pd.NA)
+            df = df.dropna() #drops row with NaNs
 
                 #Extracts year and creates year and month columns
-                year = int(file_path.split('_')[-1].split('.')[0])
-                processed_data = pd.DataFrame()
-                processed_data["Year"] = [year]*len(df)
-                processed_data["Month"] = df["Date"].dt.month
+            year = int(file_path.split('_')[-1].split('.')[0])
+            processed_data = pd.DataFrame()
+            processed_data["Year"] = [year]*len(df)
+            processed_data["Month"] = df["Date"].dt.month
 
-                numeric_columns = df.select_dtypes(include = ['number']).columns.tolist()
-                processed_data[numeric_columns] = df[numeric_columns]
+            numeric_columns = df.select_dtypes(include = ['number']).columns.tolist()
+            processed_data[numeric_columns] = df[numeric_columns]
 
-                result_df = processed_data.groupby(["Year", "Month"])[numeric_columns].mean().reset_index()
-                return result_df
-            else:
-                print("Date column is not found in the data")
-        except Exception as e:
-            print(f'Error reading {file_path}: {e}')
+            result_df = processed_data.groupby(["Year", "Month"])[numeric_columns].mean().reset_index()
+            return result_df
+        else:
+            print("Date column is not found in the data")
+    except Exception as e:
+        print(f'Error reading {file_path}: {e}')
     else:
         print(f'File not found: {file_path}')
     return pd.DataFrame()
@@ -47,7 +41,7 @@ def load_single_year_data(file_path):
 def load_data(years):
     dfs = []
     for year in years: #this loop consolidates all the csv files
-        file_path = f'C:\\Users\\ameli\\Downloads\\EPA data\\EPA_{year}.csv'
+        file_path = f'EPA_{year}.csv'
         df = load_single_year_data(file_path)
         if not df.empty:
             dfs.append(df)
@@ -117,7 +111,7 @@ def update_graph(selected_years):
        x = "Month",
        y = "Daily Mean PM2.5 Concentration",
        color = "Year",
-       title = "Comparing Harmful PM2.5 Levels in LA Over Time",
+       title = "PM2.5 Levels in LA Over Time",
        labels = {"Daily Mean PM2.5 Concentration": "PM2.5 Concentration", "Month": "Month" },
         category_orders = {"Month": list(range(1, 13))}
     )
